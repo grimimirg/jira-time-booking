@@ -78,7 +78,7 @@ def submit_worklog(config, issue_key, hours):
             print(f"   {response.text}")
 
     except requests.exceptions.RequestException as e:
-        print(f"❌ Connection error: {e}")
+        print(f"Connection error: {e}")
 
 
 # -- MAIN --
