@@ -11,20 +11,21 @@ from utilities.constants import ENV_FILE_PATH, DATE_FORMAT
 def submitWorklog(jiraEnvironment: dict[str, str], issueKey, hours):
     """Submits the worklog to Jira"""
 
-    seconds = int(hours * 3600)
+    seconds = int(round(hours * 3600))
     now = datetime.utcnow().strftime(DATE_FORMAT)
     payload = JiraRequestPayload(seconds, "Development", now)
 
     try:
         response = sendToJira(jiraEnvironment, issueKey, payload)
 
-        if response.status_code == 200:
-            hours = int(hours)
-            minutes = int((hours - hours) * 60)
+        if response.status_code in (200, 201):
+            total_hours = hours
+            whole_hours = int(total_hours)
+            minutes = int(round((total_hours - whole_hours) * 60))
 
             print("Worklog successfully recorded!")
             print(f"   Issue: {issueKey}")
-            print(f"   Time: {hours}hours {minutes}minutes")
+            print(f"   Time: {whole_hours}hours {minutes}minutes")
         else:
             print(f"Error in recording (Status: {response.status_code})")
             print(f"   {response.text}")
@@ -36,13 +37,13 @@ def submitWorklog(jiraEnvironment: dict[str, str], issueKey, hours):
 def sendToJira(jiraEnvironment: dict[str, str], issueKey: str, payload: JiraRequestPayload) -> Response:
     """Sends the worklog to Jira"""
 
-    url = f"{jiraEnvironment['JIRA_URL']}/rest/api/3/issue/{issueKey}/worklog"
+    url = f"{jiraEnvironment['JIRA_URL'].rstrip('/')}/rest/api/3/issue/{issueKey}/worklog"
     auth = (jiraEnvironment['EMAIL'], jiraEnvironment['API_TOKEN'])
     headers = {
         "Content-Type": "application/json"
     }
 
-    return requests.post(url, json=payload.toJsonRequest(), auth=auth, headers=headers)
+    return requests.post(url, json=payload.toJsonRequest(), auth=auth, headers=headers, timeout=10)
 
 
 def loadJiraEnvironmentFile():
