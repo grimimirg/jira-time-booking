@@ -5,20 +5,18 @@ import requests
 from requests import Response
 
 from classes.payload import JiraRequestPayload
+from utilities.constants import ENV_FILE_PATH, DATE_FORMAT
 
 
-def submitWorklog(config, issueKey, hours):
+def submitWorklog(jiraEnvironment: dict[str, str], issueKey, hours):
     """Submits the worklog to Jira"""
 
     seconds = int(hours * 3600)
-
-    # Current timestamp in ISO format
-    now = datetime.utcnow().strftime("%Y-%minutes-%dT%H:%M:%S.000+0000")
-
-    payload = JiraRequestPayload(seconds, "", now).toJsonRequest()
+    now = datetime.utcnow().strftime(DATE_FORMAT)
+    payload = JiraRequestPayload(seconds, "Development", now)
 
     try:
-        response = sendToJira(config, issueKey, payload)
+        response = sendToJira(jiraEnvironment, issueKey, payload)
 
         if response.status_code == 200:
             hours = int(hours)
@@ -35,49 +33,65 @@ def submitWorklog(config, issueKey, hours):
         print(f"Connection error: {e}")
 
 
-def sendToJira(config, issue_key, payload) -> Response:
+def sendToJira(jiraEnvironment: dict[str, str], issueKey: str, payload: JiraRequestPayload) -> Response:
     """Sends the worklog to Jira"""
 
-    url = f"{config['JIRA_URL']}/rest/api/3/issue/{issue_key}/worklog"
-    auth = (config['EMAIL'], config['API_TOKEN'])
+    url = f"{jiraEnvironment['JIRA_URL']}/rest/api/3/issue/{issueKey}/worklog"
+    auth = (jiraEnvironment['EMAIL'], jiraEnvironment['API_TOKEN'])
     headers = {
         "Content-Type": "application/json"
     }
 
-    return requests.post(url, json=payload, auth=auth, headers=headers)
+    return requests.post(url, json=payload.toJsonRequest(), auth=auth, headers=headers)
 
 
-def loadConfig():
-    """Reads configuration from the .env file"""
+def loadJiraEnvironmentFile():
+    """Reads configuration from the environment file"""
 
-    envFile = Path(__file__).parent / ".env"
-
-    if not envFile.exists():
-        print(f".env file not found in: {envFile}")
-        print("\nPlease, create a .env file with:")
+    if not ENV_FILE_PATH.exists():
+        print(f"Environment file not found in: {ENV_FILE_PATH}")
+        print("\nPlease, create an environment file with:")
         print("JIRA_URL=https://your.jira.url")
         print("EMAIL=your@jira.username")
         print("API_TOKEN=your-api-token")
         return None
 
-    # Read the variables from .env
+    envVariables = getJiraEnvironmentVariables()
+
+    # Check if all required variables are present
+    required = ['JIRA_URL', 'EMAIL', 'API_TOKEN']
+    if not all(key in envVariables for key in required):
+        print("Environment file requires: JIRA_URL, EMAIL, API_TOKEN")
+        return None
+
+    return envVariables
+
+
+def recordIssue(currentIssueFilePath: Path, endWorkDate: datetime, newIssueKey: str):
+    """ Creates the new issue record and store it into the file """
+
+    newIssueTimestamp = f"{endWorkDate.strftime(DATE_FORMAT)}"
+    newFileContent = f"{newIssueKey}:{newIssueTimestamp}"
+
+    with open(currentIssueFilePath, "w") as currentIssueFile:
+        currentIssueFile.write(newFileContent)
+
+
+# -- PRIVATES --
+
+
+def getJiraEnvironmentVariables() -> dict[str, str]:
     config = {}
-    with open(envFile, 'r') as f:
+
+    with open(ENV_FILE_PATH, 'r') as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith('#'):
                 continue
 
-            # Split key=value
             if '=' in line:
                 key, value = line.split('=', 1)
                 value = value.strip().strip('"').strip("'")
                 config[key.strip()] = value
-
-    # Check if all required keys are present
-    required = ['JIRA_URL', 'EMAIL', 'API_TOKEN']
-    if not all(key in config for key in required):
-        print("File .env requires: JIRA_URL, EMAIL, API_TOKEN")
-        return None
 
     return config
