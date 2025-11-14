@@ -1,5 +1,3 @@
-Jira Time Booker CLI - Documentation
-
 # Jira Time Booker CLI
 
 A simple command-line tool to quickly log work on Jira issues.
