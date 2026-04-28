@@ -39,7 +39,7 @@ def loadJiraEnvironmentFile() -> dict[str, str] | None:
     """Loads and validates the configuration from the .env file."""
     if not ENV_FILE_PATH.exists():
         print(f"Error: Environment file not found at: {ENV_FILE_PATH}")
-        print("\nPlease create a 'jira.env' file with:")
+        print("\nPlease create a '.env' file with:")
         print("JIRA_URL=https://your-domain.atlassian.net")
         print("EMAIL=your-email@example.com")
         print("API_TOKEN=your-api-token")

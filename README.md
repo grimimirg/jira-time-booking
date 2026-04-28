@@ -1,16 +1,42 @@
-Jira Time Booker CLI - Documentation
+<div align="center">
+  <img src="jira-time-booking-logo.jpeg" alt="Jira Time Booker Logo" width="400" />
+</div>
+
+<div align="center">
+
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![CLI](https://img.shields.io/badge/type-CLI-orange.svg)](https://en.wikipedia.org/wiki/Command-line_interface)
+
+</div>
 
 # Jira Time Booker CLI
 
-A simple command-line tool to quickly log work on Jira issues.
+**Tired of clicking through Jira's interface just to log your work hours?** 🤯
 
-## 1\. Setup
+We've all been there: opening the ticket, scrolling down, finding the "Log Work" button, filling in the time, adding a comment, and clicking submit... repeat for every single ticket. It's exhausting, time-consuming, and frankly, a waste of your precious development time.
+
+**Jira Time Booker CLI** is here to save your sanity. This simple command-line tool lets you log work on Jira issues in seconds—no browser, no clicks, no frustration. Just type a command and get back to coding.
+
+---
+
+## 📑 Table of Contents
+
+- [Setup](#1-setup)
+- [Usage Modes](#2-usage-modes)
+  - [Manual Logging](#mode-1-manual-logging)
+  - [Automatic Logging (Timer)](#mode-2-automatic-logging-timer)
+- [Optional: Create a Global Command](#3-optional-create-a-global-command)
+
+---
+
+## 1. Setup
 
 Follow these steps to configure the script on your machine.
 
 1.  **Download the Script**
 
-    Save the `tb.py` script to a directory on your computer (e.g., `~/scripts/`).
+    Save the `app.py` script to a directory on your computer (e.g., `~/scripts/`).
 
 2.  **Install Dependencies**
 
@@ -24,7 +50,7 @@ Follow these steps to configure the script on your machine.
 
 3.  **Create a Configuration File**
 
-    In the same directory where you saved `tb.py`, create a file named `jira.env` and add your Jira details:
+    In the same directory where you saved `app.py`, create a file named `.env` and add your Jira details:
 
     ```
     JIRA_URL=https://your-domain.atlassian.net
@@ -32,14 +58,14 @@ Follow these steps to configure the script on your machine.
     API_TOKEN=your-api-token-here
     ```
 
-    > **Security Note**: This file contains sensitive credentials. Make sure to add `jira.env` to your project's `.gitignore` file to avoid accidentally committing it. You must generate an API Token from your Atlassian account settings. **Do not use your password.** You can create a token [here](https://id.atlassian.com/manage-profile/security/api-tokens).
+    > **Security Note**: This file contains sensitive credentials. Make sure to add `.env` to your project's `.gitignore` file to avoid accidentally committing it. You must generate an API Token from your Atlassian account settings. **Do not use your password.** You can create a token [here](https://id.atlassian.com/manage-profile/security/api-tokens).
 
 4.  **Make the Script Executable**
 
     To run the script without typing `python3` each time, make it executable. In your terminal, run:
 
     ```
-    chmod +x tb.py
+    chmod +x app.py
     ```
 
 
@@ -51,7 +77,7 @@ The script can be used in two ways: Manual Logging or Automatic Timer.
 
 Use this mode to log a specific amount of time on a Jira issue.
 
-**Syntax:** `./tb.py ISSUE-KEY HOURS`
+**Syntax:** `./app.py ISSUE-KEY HOURS`
 
 *   `ISSUE-KEY`: The key of the Jira issue (e.g., `PROJ-123`).
 *   `HOURS`: The hours to log. Decimals are allowed.
@@ -60,7 +86,7 @@ Use this mode to log a specific amount of time on a Jira issue.
 
 ```
 # Log 2 hours
-$ ./tb.py PROJ-123 2
+$ ./app.py PROJ-123 2
 Worklog submitted successfully!
    Issue: PROJ-123
    Time: 2h 0m
@@ -68,7 +94,7 @@ Worklog submitted successfully!
 
 ```
 # Log 1 hour and 30 minutes
-$ ./tb.py PROJ-456 1.5
+$ ./app.py PROJ-456 1.5
 Worklog submitted successfully!
    Issue: PROJ-456
    Time: 1h 30m
@@ -76,7 +102,7 @@ Worklog submitted successfully!
 
 ```
 # Log 15 minutes
-$ ./tb.py PROJ-789 0.25
+$ ./app.py PROJ-789 0.25
 Worklog submitted successfully!
    Issue: PROJ-789
    Time: 0h 15m
@@ -86,7 +112,7 @@ Worklog submitted successfully!
 
 This mode acts like a "stopwatch". When you switch from one ticket to another, the script automatically calculates the elapsed time, logs it on the **previous** ticket, and starts the timer for the new one.
 
-**Syntax:** `./tb.py NEW-ISSUE-KEY`
+**Syntax:** `./app.py NEW-ISSUE-KEY`
 
 #### How It Works
 
@@ -101,13 +127,13 @@ This mode acts like a "stopwatch". When you switch from one ticket to another, t
 1.  **9:00 AM** - You start working on ticket `PROJ-101`. Run this command to "start the timer":
 
     ```
-    ./tb.py PROJ-101
+    ./app.py PROJ-101
     ```
 
 2.  **11:30 AM** - You've finished with `PROJ-101` and are now starting on ticket `PROJ-205`. Run the command:
 
     ```
-    ./tb.py PROJ-205
+    ./app.py PROJ-205
     ```
 
     At this point, the script performs two actions:
@@ -117,7 +143,7 @@ This mode acts like a "stopwatch". When you switch from one ticket to another, t
 3.  **12:00 PM** - You're ready to work on `PROJ-300`.
 
     ```
-    ./tb.py PROJ-300
+    ./app.py PROJ-300
     ```
 
     The script will log **0.5 hours** (30 minutes) of work on `PROJ-205` and set `PROJ-300` as the current ticket.
@@ -133,7 +159,7 @@ To run the script from any directory without typing the full path, you can add a
 2.  Add the following line, replacing `/path/to/script/` with the **absolute path** to your script's folder.
 
     ```
-    alias tb='/path/to/script/tb.py'
+    alias tb='/path/to/script/app.py'
     ```
 
 3.  Reload your shell (`source ~/.zshrc`) or open a new terminal tab.

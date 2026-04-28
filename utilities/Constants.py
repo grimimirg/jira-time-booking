@@ -6,4 +6,4 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 
 CURRENT_ISSUE_FILE_PATH = PROJECT_ROOT / "current-issue.txt"
-ENV_FILE_PATH = PROJECT_ROOT / "jira.env"
+ENV_FILE_PATH = PROJECT_ROOT / ".env"

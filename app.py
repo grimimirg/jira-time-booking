@@ -50,7 +50,12 @@ def automaticSubmit(jiraEnvironment: dict[str, str]):
         return  # Exit after starting the first timer
 
     # If the file exists, proceed with normal logic
-    currentIssueKey, startTimeStr = currentIssueFileContent.split(':', 1)
+    try:
+        currentIssueKey, startTimeStr = currentIssueFileContent.split(':', 1)
+    except ValueError:
+        print("Error: Malformed current-issue.txt file. Deleting it and starting fresh.")
+        recordIssue(CURRENT_ISSUE_FILE_PATH, now, newIssueKey)
+        return
 
     startWorkDate = parser.parse(startTimeStr)
     timeDifference = now - startWorkDate
