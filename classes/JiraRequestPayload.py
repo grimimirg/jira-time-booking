@@ -7,8 +7,6 @@ class JiraRequestPayload:
     timeSpentSeconds: int
     started: str
 
-    # 'field' allows defining a default value.
-    # This default is a standard Atlassian Document Format (ADF) comment.
     comment: dict = field(default_factory=lambda: {
         "type": "doc",
         "version": 1,
@@ -27,5 +25,4 @@ class JiraRequestPayload:
 
     def as_dict(self) -> dict:
         """Converts the class instance to a dictionary for the JSON request."""
-        # asdict is a dataclass helper function
         return asdict(self)

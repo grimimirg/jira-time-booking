@@ -14,9 +14,9 @@
 
 **Tired of clicking through Jira's interface just to log your work hours?** 🤯
 
-We've all been there: opening the ticket, scrolling down, finding the "Log Work" button, filling in the time, adding a comment, and clicking submit... repeat for every single ticket. It's exhausting, time-consuming, and frankly, a waste of your precious development time.
+We've all been there: opening the ticket, scrolling down, finding the "Log Work" button, filling in the time, adding a comment, and clicking submit... repeat for every single ticket. It's exhausting, time-consuming, and frankly, a waste of time.
 
-**Jira Time Booker CLI** is here to save your sanity. This simple command-line tool lets you log work on Jira issues in seconds—no browser, no clicks, no frustration. Just type a command and get back to coding.
+**Jira Time Booker CLI** is here to save your sanity. This simple command-line tool lets you log work on Jira issues in seconds—no browser, no clicks, no frustration. Just type a command.
 
 ---
 
@@ -159,7 +159,7 @@ To run the script from any directory without typing the full path, you can add a
 2.  Add the following line, replacing `/path/to/script/` with the **absolute path** to your script's folder.
 
     ```
-    alias tb='/path/to/script/app.py'
+    alias tb='python3 /path/to/script/app.py'
     ```
 
 3.  Reload your shell (`source ~/.zshrc`) or open a new terminal tab.

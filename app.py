@@ -1,6 +1,5 @@
 import sys
 from datetime import datetime, timezone
-
 from dateutil import parser
 
 from utilities.Constants import CURRENT_ISSUE_FILE_PATH
@@ -40,16 +39,14 @@ def automaticSubmit(jiraEnvironment: dict[str, str]):
 
     now = datetime.now(timezone.utc)
 
-    # Handle the case where the file doesn't exist (first run)
     try:
         with open(CURRENT_ISSUE_FILE_PATH, "r") as currentIssueFile:
             currentIssueFileContent = currentIssueFile.read().strip()
     except FileNotFoundError:
         print(f"Starting timer for new issue: {newIssueKey}")
         recordIssue(CURRENT_ISSUE_FILE_PATH, now, newIssueKey)
-        return  # Exit after starting the first timer
+        return
 
-    # If the file exists, proceed with normal logic
     try:
         currentIssueKey, startTimeStr = currentIssueFileContent.split(':', 1)
     except ValueError:
@@ -85,10 +82,6 @@ def main():
     if not jiraEnvironment:
         sys.exit(1)
 
-    # The sys.argv list includes the script name as its first element.
-    # len=1: script only, no args
-    # len=2: script + 1 arg (automatic mode)
-    # len=3: script + 2 args (manual mode)
     num_args = len(sys.argv)
 
     if num_args == 2:
